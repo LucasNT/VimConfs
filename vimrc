@@ -209,3 +209,7 @@ augroup arquivosVim
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
 "}}}
+
+"source das conf local
+source source_vimrc
+
