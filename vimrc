@@ -211,5 +211,5 @@ augroup END
 "}}}
 
 "source das conf local
-source source_vimrc
+source $HOME/.vim/source_vimrc
 
