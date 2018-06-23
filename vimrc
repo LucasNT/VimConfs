@@ -85,7 +85,7 @@ let g:tex_flavor='latex'
 "conf de temas ------------------ {{{
 "let g:gruvbox_italic=1
 let g:airline_theme='dark'
-"set background=light
+set background=dark
 ":colorscheme gruvbox
 colorscheme solarized
 highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
@@ -196,8 +196,10 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
     autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>in <Esc>I#include <<Esc>A.h>
     autocmd FileType c,c.doxygen,cpp :let &path="lib,"
+    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
     autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> çf Va{zf
-    autocmd FIleType c,c.doxygen,cpp :noremap <silent> <F8> :TagbarToggle<CR>
+"}
+    autocmd FileType c,c.doxygen,cpp :noremap <silent> <F8> :TagbarToggle<CR>
 augroup END
 "}}}
 
