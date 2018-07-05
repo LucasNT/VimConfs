@@ -16,16 +16,16 @@ Plug 'scrooloose/nerdtree'
 
 Plug 'sjl/gundo.vim'
 
+Plug 'xolox/vim-easytags'
+
+Plug 'xolox/vim-misc'
+
+Plug 'majutsushi/tagbar'
+
 Plug 'Shougo/neocomplete' , { 'on' : 'NeoCompleteEnable' }
 
 " C
 Plug 'Valloric/YouCompleteMe' , { 'for' : ['c' , 'cpp' , 'c.doxygen' , 'python' , 'py' ]}
-
-Plug 'xolox/vim-easytags' , { 'for' : ['c' , 'cpp' , 'c.doxygen' ]}
-
-Plug 'xolox/vim-misc' , { 'for' : ['c' , 'cpp' , 'c.doxygen' ]}
-
-Plug 'majutsushi/tagbar' , { 'for' : ['c' , 'cpp' , 'c.doxygen' ]}
 
 " LaTeX
 Plug 'vim-latex/vim-latex' , { 'for' : [ 'tex' , 'plaintex' ] }
@@ -89,16 +89,7 @@ set background=dark
 ":colorscheme gruvbox
 colorscheme solarized
 highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-"if &term =~ "xterm\\|rxvt"
-"	" use an orange cursor in insert mode
-"	let &t_SI = "\<Esc>]12;orange\x7"
-"	" use a red cursor otherwise
-"	let &t_EI = "\<Esc>]12;red\x7"
-"	silent !echo -ne "\033]12;red\007"
-"	" reset cursor when vim exits
-"	autocmd VimLeave * silent !echo -ne "\033]12;black\007"
-"	" use \003]12;gray\007 for gnome-terminal and rxvt up to version 9.21
-"endif
+"match ExtraWhitespace /\s\+$/
 "}}}
 
 "undo confgs ----------------- {{{
@@ -119,10 +110,10 @@ set undolevels=1000 "tamanho do historico de undos
 :nnoremap <enter> o<Esc>
 
 " coloca texto selecionado entre aspas
-:vnoremap <leader>" <Esc>`<i"<Esc>`>la"<Esc>
+:vnoremap <leader>" vi"
 
 " palavra atual entre aspas
-:nnoremap <leader>" viw<esc>a"<esc>bi"<esc>lel
+:nnoremap <leader>" vi"
 
 "map para pegar trailingspace
 
@@ -158,6 +149,9 @@ nnoremap <leader><TAB> mmgg=G'm
 :nmap <S-ScrollWheelRight> <nop>
 :nmap <C-ScrollWheelRight> <nop>
 
+:noremap <silent> <F8> :TagbarToggle<CR>
+
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 "tab
 "inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -199,11 +193,9 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
     autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> çf Va{zf
 "}
-    autocmd FileType c,c.doxygen,cpp :noremap <silent> <F8> :TagbarToggle<CR>
 augroup END
 "}}}
 
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " autocmd - vimscript	----------------------{{{
 augroup arquivosVim
