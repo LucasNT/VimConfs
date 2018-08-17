@@ -3,8 +3,7 @@ set rtp +=~/.vim/bundle/plug
 call plug#begin('~/.vim/cdir_plugins')
 
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
 
 
 Plug 'airblade/vim-gitgutter'
@@ -14,7 +13,7 @@ Plug 'mileszs/ack.vim'
 
 Plug 'scrooloose/nerdtree'
 
-Plug 'sjl/gundo.vim'
+Plug 'mbbill/undotree'
 
 Plug 'xolox/vim-easytags'
 
@@ -24,8 +23,11 @@ Plug 'majutsushi/tagbar'
 
 Plug 'Shougo/neocomplete' , { 'on' : 'NeoCompleteEnable' }
 
+Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
 " C
-Plug 'Valloric/YouCompleteMe' , { 'for' : ['c' , 'cpp' , 'c.doxygen' , 'python' , 'py' ]}
+Plug 'Valloric/YouCompleteMe' , { 'for' : ['c' , 'cpp' , 'c.doxygen' , 'javascript' , 'html' ,  'python' , 'py'  ]}
+
+Plug 'walm/jshint.vim' , { 'for' : [ 'javascript' ] }
 
 " LaTeX
 Plug 'vim-latex/vim-latex' , { 'for' : [ 'tex' , 'plaintex' ] }
@@ -69,39 +71,9 @@ let g:tex_flavor='latex'
 "hi SpecialKey term=reverse cterm=reverse guibg=black
 "alterar a cor acima
 
-"Vim-LaTeX --------------------------{{{
-    let g:Tex_CustomTemplateDirectory = '$HOME/.vim/templates/latex/'
-"}}}
-
-"gvim-----------------{{{
-    set guifont=Monospace\ 12
-"}}}
-
-"Vim-Airline --------------- {{{
-    let g:airline_symbols_ascii = 1
-  let g:airline#extensions#tagbar#enabled = 0
-"}}}
-
-"conf de temas ------------------ {{{
-"let g:gruvbox_italic=1
-let g:airline_theme='dark'
-set background=dark
-":colorscheme gruvbox
-colorscheme solarized
-highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-"match ExtraWhitespace /\s\+$/
-"}}}
-
-"undo confgs ----------------- {{{
-if !isdirectory($HOME."/.vim")
-    call mkdir($HOME."/.vim", "", 0770)
-endif
-if !isdirectory($HOME."/.vim/undo-dir")
-    call mkdir($HOME."/.vim/undo-dir", "", 0700)
-endif
-set undodir=~/.vim/undo-dir "pasta que armazena undos
-set undofile "permite que o historico de undos seja salvo em um arquivo
-set undolevels=1000 "tamanho do historico de undos
+"alguns autocmd------------------{{{
+    autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+        \| exe "normal! g'\"" | endif
 "}}}
 
 " alguns maps -----------------{{{
@@ -158,6 +130,40 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " }}}
 
+"Abreviations--------------------------{{{
+    abbreviate lorem Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+"}}}
+
+"Vim-LaTeX --------------------------{{{
+    let g:Tex_CustomTemplateDirectory = '$HOME/.vim/templates/latex/'
+"}}}
+
+"gvim-----------------{{{
+    set guifont=Monospace\ 12
+"}}}
+
+"conf de temas ------------------ {{{
+"let g:gruvbox_italic=1
+let g:airline_theme='dark'
+set background=dark
+":colorscheme gruvbox
+colorscheme solarized
+highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
+"match ExtraWhitespace /\s\+$/
+"}}}
+
+"undo confgs ----------------- {{{
+if !isdirectory($HOME."/.vim")
+    call mkdir($HOME."/.vim", "", 0770)
+endif
+if !isdirectory($HOME."/.vim/undo-dir")
+    call mkdir($HOME."/.vim/undo-dir", "", 0700)
+endif
+set undodir=~/.vim/undo-dir "pasta que armazena undos
+set undofile "permite que o historico de undos seja salvo em um arquivo
+set undolevels=1000 "tamanho do historico de undos
+"}}}
+
 " ASSEMBLY ---------------------- {{{
 augroup ASSEMBLY
     autocmd!
@@ -170,7 +176,7 @@ augroup END
 augroup grupoC
     autocmd!
     autocmd BufRead,BufNewFile *.h,*.c set filetype=c.doxygen
-    autocmd FileType c,c.doxygen :let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+    "autocmd FileType c,c.doxygen :let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
 augroup END
 
 augroup grupoCPP
@@ -188,7 +194,8 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> <leader>g I//<Esc>
     autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>g <Esc>mnI//'ci
     autocmd FileType c,c.doxygen,cpp :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
-    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>in <Esc>I#include <<Esc>A.h>
+    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A.h>
+    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.h"
     autocmd FileType c,c.doxygen,cpp :let &path="lib,"
     autocmd FileType c,c.doxygen,cpp :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
     autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> çf Va{zf
@@ -196,6 +203,10 @@ augroup grupoCPPeC
 augroup END
 "}}}
 
+"autocmd xml e html ------------{{{
+    autocmd FileType html,xml :inoremap <buffer> </ </<C-X><C-O><Esc>mb==`ba
+    autocmd FileType html,xml :iabbrev <buffer> <html> <html><CR><head><CR><title></<CR></<CR><body><CR></<CR></
+"}}}
 
 " autocmd - vimscript	----------------------{{{
 augroup arquivosVim
