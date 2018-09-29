@@ -87,6 +87,8 @@ let g:tex_flavor='latex'
 " palavra atual entre aspas
 :nnoremap <leader>" vi"
 
+:inoremap <leader>j <Esc>:call Olamundo()<cr>
+
 "map para pegar trailingspace
 
 "troca o modo dos numeros
@@ -176,6 +178,8 @@ augroup END
 augroup grupoC
     autocmd!
     autocmd BufRead,BufNewFile *.h,*.c set filetype=c.doxygen
+    autocmd FileType c,c.doxygen :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A.h>
+    autocmd FileType c,c.doxygen :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.h"
     "autocmd FileType c,c.doxygen :let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
 augroup END
 
@@ -184,6 +188,8 @@ augroup grupoCPP
     autocmd FileType cpp :let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_confcpp.py'
     autocmd FileType cpp :nnoremap <buffer> <leader>p ma$"nyb$F "yy^/getters<CR>o<esc>xxa<c-r>y <c-r>n<esc>F l~F aget<esc>A() const;<esc>/setters<CR>o<esc>xxavoid <c-r>n<esc>F l~F aset<esc>A(<c-r>y <c-r>n);<esc>'aj:noh<CR>
     autocmd FileType cpp :nnoremap <buffer> <leader>P ma$"nyb$F "yy^?class <CR>w"cyeGo<c-r>y <c-r>n<esc>F l~F a<c-r>c::get<esc>A() const{<CR>return this-><c-r>n;<CR>}<CR><esc>3k"fd4d:let @G=@f<CR>ovoid <c-r>n<esc>F l~F a<c-r>c::set<esc>A(<c-r>y <c-r>n){<CR>this-><c-r>n = <c-r>n;<CR>}<CR><esc>3k"fd4d:let @S=@f<CR>'aj:noh<CR>:w<CR>
+    autocmd FileType cpp :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A>
+    autocmd FileType cpp :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.hpp"
 augroup END
 
 augroup grupoCPPeC
@@ -194,8 +200,6 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> <leader>g I//<Esc>
     autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>g <Esc>mnI//'ci
     autocmd FileType c,c.doxygen,cpp :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
-    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A.h>
-    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.h"
     autocmd FileType c,c.doxygen,cpp :let &path="lib,"
     autocmd FileType c,c.doxygen,cpp :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
     autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> çf Va{zf
@@ -217,4 +221,13 @@ augroup END
 
 "source das conf local
 source $HOME/.vim/source_vimrc
+
+
+:function Olamundo()
+:   execute "normal! /<+.*+>\<CR>va<"
+:   let carac = getchar()
+    let linha = call getLine(".")
+    echom linha
+    echom "mensagem minha" . carac
+:endfunction
 
