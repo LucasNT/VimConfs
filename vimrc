@@ -21,6 +21,8 @@ Plug 'xolox/vim-misc'
 
 Plug 'majutsushi/tagbar'
 
+Plug 'inside/vim-search-pulse'
+
 Plug 'Shougo/neocomplete' , { 'on' : 'NeoCompleteEnable' }
 
 Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
@@ -32,11 +34,16 @@ Plug 'walm/jshint.vim' , { 'for' : [ 'javascript' ] }
 " LaTeX
 Plug 'vim-latex/vim-latex' , { 'for' : [ 'tex' , 'plaintex' ] }
 
+
+Plug 'drmingdrmer/xptemplate'
+
 call plug#end()
 "}}}
 
+let g:easytags_cmd = '/usr/bin/ctags'
 let g:solarized_termcolors=256
 
+:let g:easytags_suppress_ctags_warning = 1
 let mapleader = "ç"
 let &path.="lib,"
 
@@ -74,6 +81,8 @@ let g:tex_flavor='latex'
 "alguns autocmd------------------{{{
     autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
         \| exe "normal! g'\"" | endif
+    " para criar e salvar os folds feitos no arquivo, deve salvar outras
+    " coisas mas não sei qual
 "}}}
 
 " alguns maps -----------------{{{
@@ -149,9 +158,14 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 let g:airline_theme='dark'
 set background=dark
 ":colorscheme gruvbox
-colorscheme solarized
-highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-"match ExtraWhitespace /\s\+$/
+if &term =~ "linux"
+    colorscheme crayon
+    hi ExtraWhitespace ctermbg=blue
+else
+    colorscheme meu
+end
+
+match ExtraWhitespace /\s\+$/
 "}}}
 
 "undo confgs ----------------- {{{
@@ -178,8 +192,8 @@ augroup END
 augroup grupoC
     autocmd!
     autocmd BufRead,BufNewFile *.h,*.c set filetype=c.doxygen
-    autocmd FileType c,c.doxygen :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A.h>
-    autocmd FileType c,c.doxygen :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.h"
+    autocmd FileType c,c.doxygen,cuda :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A.h>
+    autocmd FileType c,c.doxygen,cuda :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.h"
     "autocmd FileType c,c.doxygen :let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
 augroup END
 
@@ -194,15 +208,15 @@ augroup END
 
 augroup grupoCPPeC
     autocmd!
-    autocmd FileType c,c.doxygen,cpp :iabbrev <buffer> imain int main (int argc , char* argv[]){<Enter>return 0;<Enter>}<up><up><end><Enter>
-    autocmd FileType c,c.doxygen,cpp :let @s=''
-    autocmd FileType c,c.doxygen,cpp :let @g=''
-    autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> <leader>g I//<Esc>
-    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> <leader>g <Esc>mnI//'ci
-    autocmd FileType c,c.doxygen,cpp :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
-    autocmd FileType c,c.doxygen,cpp :let &path="lib,"
-    autocmd FileType c,c.doxygen,cpp :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
-    autocmd FileType c,c.doxygen,cpp :nnoremap <buffer> çf Va{zf
+    autocmd FileType c,c.doxygen,cpp,cuda :iabbrev <buffer> imain int main (int argc , char* argv[]){<Enter>return 0;<Enter>}<up><up><end><Enter>
+    autocmd FileType c,c.doxygen,cpp,cuda :let @s=''
+    autocmd FileType c,c.doxygen,cpp,cuda :let @g=''
+    autocmd FileType c,c.doxygen,cpp,cuda :nnoremap <buffer> <leader>g I//<Esc>
+    autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> <leader>g <Esc>mnI//'ci
+    autocmd FileType c,c.doxygen,cpp,cuda :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
+    autocmd FileType c,c.doxygen,cpp,cuda :let &path="lib,"
+    autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
+    autocmd FileType c,c.doxygen,cpp,cuda :nnoremap <buffer> çf Va{zf
 "}
 augroup END
 "}}}
