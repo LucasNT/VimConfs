@@ -11,21 +11,19 @@ Plug 'tpope/vim-fugitive'
 
 Plug 'mileszs/ack.vim'
 
-Plug 'scrooloose/nerdtree'
+"Plug 'scrooloose/nerdtree'
 
 Plug 'mbbill/undotree'
 
-Plug 'xolox/vim-easytags'
-
-Plug 'xolox/vim-misc'
-
 Plug 'majutsushi/tagbar'
+
+Plug 'ludovicchabant/vim-gutentags'
 
 Plug 'inside/vim-search-pulse'
 
 Plug 'Shougo/neocomplete' , { 'on' : 'NeoCompleteEnable' }
 
-Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
+"Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
 " C
 Plug 'Valloric/YouCompleteMe' , { 'for' : ['c' , 'cpp' , 'c.doxygen' , 'javascript' , 'html' ,  'python' , 'py'  ]}
 
@@ -34,13 +32,15 @@ Plug 'walm/jshint.vim' , { 'for' : [ 'javascript' ] }
 " LaTeX
 Plug 'vim-latex/vim-latex' , { 'for' : [ 'tex' , 'plaintex' ] }
 
+"Plug 'drmingdrmer/xptemplate'
 
-Plug 'drmingdrmer/xptemplate'
+Plug 'sirver/ultisnips'
+
+Plug 'honza/vim-snippets'
 
 call plug#end()
 "}}}
 
-let g:easytags_cmd = '/usr/bin/ctags'
 let g:solarized_termcolors=256
 
 :let g:easytags_suppress_ctags_warning = 1
@@ -58,11 +58,14 @@ set hls is
 set showcmd
 set laststatus=2
 
-"tab config
+"tab config------------{{{
+
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
 set expandtab
+
+"}}}
 
 set scrolloff=5
 set mouse=""
@@ -71,14 +74,58 @@ set hidden "melhor uso de buffers na mesma janela
 set ttyfast "melhoria de desempenho, ver :h ttyfast
 "set list "Mostrar tabs e trails(como o caracter •)
 set listchars=tab:>-,space:•,extends:»,precedes:« "Extends aparecem com a funcao nowrap ativada
+set noshowmode
+set breakindent
 let g:tex_flavor='latex'
 
+
+
+"lightline----------------{{{
+let g:lightline = {
+    \ 'colorscheme':'one',
+    \ 'active': {
+    \   'left': [ [ 'mode', 'paste' ],
+    \             [ 'filename',  'gitbranch'  ] , ['lineinfo','percent' ] ],
+    \   'right': [ ['function' ] ,[],[] , ['fileencoding', 'filetype','fileformat'] ],
+    \ },
+    \ 'component_function': {
+    \   'gitbranch': 'fugitive#head',
+    \   'filename':  'Algo',
+    \   'function': 'CurrentTag'
+    \ },
+    \ }
+
+function! Algo()
+    let s:texto = expand('%:t') !=# '' ? expand('%:t') : ''
+    return s:texto . (&readonly ? ' RO' : '') . (&modified ? ' +' : '')
+endfunction
+
+function! CurrentTag()
+    return tagbar#currenttag("%s" , "")
+endfunction
+
+"}}}
+
+"UltiSnips---------------------{{{
+
+
+    let g:UltiSnipsExpandTrigger="<c-z>"
+    let g:UltiSnipsJumpForwardTrigger="<c-z>"
+    let g:UltiSnipsJumpBackwardTrigger="<c-\>"
+
+"}}}
 
 "hi Visual term=reverse cterm=reverse guibg=black
 "hi SpecialKey term=reverse cterm=reverse guibg=black
 "alterar a cor acima
 
+
+"gutentags----------{{{
+   let g:gutentags_project_root  = [ 'tags' ]
+"}}}
+
 "alguns autocmd------------------{{{
+    " retornar o cursor a posição em que estava quando fecho o arquivo
     autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
         \| exe "normal! g'\"" | endif
     " para criar e salvar os folds feitos no arquivo, deve salvar outras
@@ -147,6 +194,10 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 "Vim-LaTeX --------------------------{{{
     let g:Tex_CustomTemplateDirectory = '$HOME/.vim/templates/latex/'
+    augroup vimLatex
+        autocmd!
+        autocmd FileType tex :set tw=120
+    augroup END
 "}}}
 
 "gvim-----------------{{{
@@ -155,7 +206,6 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 "conf de temas ------------------ {{{
 "let g:gruvbox_italic=1
-let g:airline_theme='dark'
 set background=dark
 ":colorscheme gruvbox
 if &term =~ "linux"
@@ -191,7 +241,7 @@ augroup END
 " autocmd -C e C++ ----------------------{{{
 augroup grupoC
     autocmd!
-    autocmd BufRead,BufNewFile *.h,*.c set filetype=c.doxygen
+    autocmd BufRead,BufNewFile *.c set filetype=c.doxygen
     autocmd FileType c,c.doxygen,cuda :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A.h>
     autocmd FileType c,c.doxygen,cuda :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.h"
     "autocmd FileType c,c.doxygen :let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
@@ -199,7 +249,6 @@ augroup END
 
 augroup grupoCPP
     autocmd!
-    autocmd FileType cpp :let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_confcpp.py'
     autocmd FileType cpp :nnoremap <buffer> <leader>p ma$"nyb$F "yy^/getters<CR>o<esc>xxa<c-r>y <c-r>n<esc>F l~F aget<esc>A() const;<esc>/setters<CR>o<esc>xxavoid <c-r>n<esc>F l~F aset<esc>A(<c-r>y <c-r>n);<esc>'aj:noh<CR>
     autocmd FileType cpp :nnoremap <buffer> <leader>P ma$"nyb$F "yy^?class <CR>w"cyeGo<c-r>y <c-r>n<esc>F l~F a<c-r>c::get<esc>A() const{<CR>return this-><c-r>n;<CR>}<CR><esc>3k"fd4d:let @G=@f<CR>ovoid <c-r>n<esc>F l~F a<c-r>c::set<esc>A(<c-r>y <c-r>n){<CR>this-><c-r>n = <c-r>n;<CR>}<CR><esc>3k"fd4d:let @S=@f<CR>'aj:noh<CR>:w<CR>
     autocmd FileType cpp :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A>
@@ -224,6 +273,10 @@ augroup END
 "autocmd xml e html ------------{{{
     autocmd FileType html,xml :inoremap <buffer> </ </<C-X><C-O><Esc>mb==`ba
     autocmd FileType html,xml :iabbrev <buffer> <html> <html><CR><head><CR><title></<CR></<CR><body><CR></<CR></
+"}}}
+
+"txt --------------- {{{
+    autocmd FileType txt,text :set tw=100
 "}}}
 
 " autocmd - vimscript	----------------------{{{
