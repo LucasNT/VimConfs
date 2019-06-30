@@ -41,9 +41,6 @@ Plug 'honza/vim-snippets'
 call plug#end()
 "}}}
 
-let g:solarized_termcolors=256
-
-:let g:easytags_suppress_ctags_warning = 1
 let mapleader = "ç"
 let &path.="lib,"
 
@@ -67,7 +64,7 @@ set expandtab
 
 "}}}
 
-set scrolloff=5
+set scrolloff=5  " a margem do fim da tela
 set mouse=""
 set lazyredraw "melhoria de desempenho
 set hidden "melhor uso de buffers na mesma janela
@@ -101,7 +98,9 @@ function! Algo()
 endfunction
 
 function! CurrentTag()
-    return tagbar#currenttag("%s" , "")
+    let l:texto = tagbar#currenttag("%s" , "")
+    let l:texto = strpart(l:texto , 0 , 30)
+    return l:texto
 endfunction
 
 "}}}
@@ -158,11 +157,6 @@ nnoremap <leader><TAB> mmgg=G'm
 "nnoremap p mmp'[V']'m=
 
 
-"map para trocar de buffer e aumentar ele
-
-:nnoremap <S-Tab>  <C-w><C-w><C-w>_<C-w><bar>
-
-:inoremap <S-Tab>  <C-d>
 
 "" desativa a roda ¬¬
 
