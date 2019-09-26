@@ -25,7 +25,7 @@ Plug 'Shougo/neocomplete' , { 'on' : 'NeoCompleteEnable' }
 
 "Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
 " C
-Plug 'Valloric/YouCompleteMe' , { 'for' : ['c' , 'cpp' , 'c.doxygen' , 'javascript' , 'html' ,  'python' , 'py'  ]}
+Plug 'dense-analysis/ale' , { 'for' : [ 'c' , 'cpp' , 'c.doxygen' ]}
 
 Plug 'walm/jshint.vim' , { 'for' : [ 'javascript' ] }
 
