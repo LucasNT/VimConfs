@@ -21,11 +21,10 @@ Plug 'ludovicchabant/vim-gutentags'
 
 Plug 'inside/vim-search-pulse'
 
-Plug 'Shougo/neocomplete' , { 'on' : 'NeoCompleteEnable' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 "Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
 " C
-Plug 'dense-analysis/ale' , { 'for' : [ 'c' , 'cpp' , 'c.doxygen' ]}
 
 Plug 'walm/jshint.vim' , { 'for' : [ 'javascript' ] }
 
@@ -40,6 +39,22 @@ Plug 'honza/vim-snippets'
 
 call plug#end()
 "}}}
+
+
+
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
+
+inoremap <silent><expr> <c-space> coc#refresh()
+
 
 let mapleader = "ç"
 let &path.="lib,"
@@ -175,7 +190,6 @@ nnoremap <leader><TAB> mmgg=G'm
 
 :noremap <silent> <F8> :TagbarToggle<CR>
 
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 "tab
 "inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
