@@ -21,7 +21,9 @@ Plug 'ludovicchabant/vim-gutentags'
 
 Plug 'inside/vim-search-pulse'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release' , 'for' : ['c.doxygen' , 'c' , 'cpp']}
+
+Plug 'JuliaEditorSupport/julia-vim' , { 'for' : [ 'julia' ] }
 
 "Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
 " C
@@ -56,7 +58,7 @@ inoremap <silent><expr> <Tab>
 inoremap <silent><expr> <c-space> coc#refresh()
 
 
-let mapleader = "ç"
+let mapleader = ";"
 let &path.="lib,"
 
 syntax on
