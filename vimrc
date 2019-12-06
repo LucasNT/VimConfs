@@ -44,21 +44,13 @@ call plug#end()
 
 
 
-" use <tab> for trigger completion and navigate to the next complete item
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
 
-inoremap <silent><expr> <Tab>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<Tab>" :
-      \ coc#refresh()
+" if para mudar alguns comandos quando o teclado for dvorak
+if  substitute(system("setxkbmap -query | grep variant | sed  's/\\s\\+/ /' | cut -d ' ' -f 2"), '\n$', '', '') == "dvorak"
+    "set langmap='q,\\,w,.e,pr,yt,fy,gu,ci,ro,lp,/[,=],aa,os,ed,uf,ig,dh,hj,tk,nl,s\\;,-',\\;z,qx,jc,kv,xb,bn,mm,w\\,,v.,z/,[-,]=,\"Q,<W,>E,PR,YT,FY,GU,CI,RO,LP,?{,+},AA,OS,ED,UF,IG,DH,HJ,TK,NL,S:,_\",:Z,QX,JC,KV,XB,BN,MM,W<,V>,Z?
+endif
 
-inoremap <silent><expr> <c-space> coc#refresh()
-
-
-let mapleader = ";"
+let mapleader = "ç"
 let &path.="lib,"
 
 syntax on
@@ -77,7 +69,7 @@ set laststatus=2
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
-set expandtab
+"set expandtab
 
 "}}}
 
@@ -249,6 +241,11 @@ augroup END
 
 "*autocmd-events*
 " autocmd -C e C++ ----------------------{{{
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
 augroup grupoC
     autocmd!
     autocmd BufRead,BufNewFile *.c set filetype=c.doxygen
@@ -277,7 +274,16 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
     autocmd FileType c,c.doxygen,cpp,cuda :nnoremap <buffer> çf Va{zf
 "}
+	autocmd FileType c,c.oxygen,cpp,cuda :inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
+	autocmd FileType c,c.oxygen,cpp,cuda :inoremap <silent><expr> <c-space> coc#refresh()
 augroup END
+
+
+
+
 "}}}
 
 "autocmd xml e html ------------{{{
