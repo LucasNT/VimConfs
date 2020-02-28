@@ -209,12 +209,12 @@ nnoremap <leader><TAB> mmgg=G'm
 "conf de temas ------------------ {{{
 "let g:gruvbox_italic=1
 set background=dark
-":colorscheme gruvbox
 if &term =~ "linux"
     colorscheme crayon
     hi ExtraWhitespace ctermbg=blue
 else
-    colorscheme meu
+    colorscheme PaperColor
+    hi ExtraWhitespace ctermbg=red
 end
 
 match ExtraWhitespace /\s\+$/
