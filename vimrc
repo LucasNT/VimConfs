@@ -17,32 +17,25 @@ Plug 'mbbill/undotree'
 
 Plug 'majutsushi/tagbar'
 
-Plug 'ludovicchabant/vim-gutentags'
-
 Plug 'inside/vim-search-pulse'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release' , 'for' : ['c.doxygen' , 'c' , 'cpp']}
-
 Plug 'JuliaEditorSupport/julia-vim' , { 'for' : [ 'julia' ] }
+
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+Plug 'vim/killersheep'
 
 "Plug 'skammer/vim-css-color' , { 'for' : ['css' , 'html'] }
 " C
 
-Plug 'walm/jshint.vim' , { 'for' : [ 'javascript' ] }
-
 " LaTeX
 Plug 'vim-latex/vim-latex' , { 'for' : [ 'tex' , 'plaintex' ] }
 
-"Plug 'drmingdrmer/xptemplate'
-
-Plug 'sirver/ultisnips'
-
-Plug 'honza/vim-snippets'
-
 call plug#end()
 "}}}
-
-
 
 
 " if para mudar alguns comandos quando o teclado for dvorak
@@ -84,6 +77,53 @@ set noshowmode
 set breakindent
 let g:tex_flavor='latex'
 
+"folding
+set foldcolumn=1
+
+
+
+"vim-lsp -------------------- {{{
+
+	if(executable('ccls'))
+ 		au User lsp_setup call lsp#register_server({
+ 					\ 'name': 'ccls',
+ 					\ 'cmd': {server_info->['ccls']},
+ 					\ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
+ 					\ 'initialization_options': {'clang':{ 'resourceDir': '/usr/lib/clang/9.0.1'} ,'cache': {'directory': '/tmp/ccls/cache' }},
+ 					\ 'whitelist': ['c.doxygen', 'c', 'cpp', 'objc', 'objcpp', 'cc'],
+ 					\})
+	endif
+
+	let g:lsp_diagnostics_enabled = 1
+	let g:lsp_signs_enabled = 1
+	let g:lsp_diagnostics_float_cursor = 1
+	let g:lsp_diagnostics_echo_delay = 1000
+	let g:lsp_hover_conceal = 0
+	set foldmethod=expr
+				\ foldexpr=lsp#ui#vim#folding#foldexpr()
+	function! s:on_lsp_buffer_enabled() abort
+		setlocal omnifunc=lsp#complete
+		setlocal signcolumn=yes
+		nmap <buffer> <leader>d <plug>(lsp-definition)
+		"nmap <buffer> <leader>  <plug>(function)
+		nmap <buffer> <leader>n <plug>(lsp-next-diagnostic)
+		nmap <buffer> <leader>N <plug>(lsp-previous-diagnostic)
+		nmap <buffer> <leader>r <plug>(lsp-rename)
+		nmap <buffeR> <leader>* <plug>(lsp-next-reference)
+		nmap <buffeR> <leader># <plug>(lsp-previous-reference)
+	endfunction
+	augroup lsp_install
+		au!
+		" call s:on_lsp_buffer_enabled only for languages that has the server registered.
+		autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+	augroup END
+
+	inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+	inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+	inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
+	imap <c-space> <Plug>(asyncomplete_force_refresh)
+
+"}}}
 
 
 "lightline----------------{{{
@@ -114,30 +154,11 @@ endfunction
 
 "}}}
 
-"UltiSnips---------------------{{{
-
-
-    let g:UltiSnipsExpandTrigger="<c-z>"
-    let g:UltiSnipsJumpForwardTrigger="<c-z>"
-    let g:UltiSnipsJumpBackwardTrigger="<c-\>"
-
-"}}}
-
-"hi Visual term=reverse cterm=reverse guibg=black
-"hi SpecialKey term=reverse cterm=reverse guibg=black
-"alterar a cor acima
-
-
-"gutentags----------{{{
-   let g:gutentags_project_root  = [ 'tags' ]
-"}}}
 
 "alguns autocmd------------------{{{
     " retornar o cursor a posição em que estava quando fecho o arquivo
     autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
         \| exe "normal! g'\"" | endif
-    " para criar e salvar os folds feitos no arquivo, deve salvar outras
-    " coisas mas não sei qual
 "}}}
 
 " alguns maps -----------------{{{
@@ -145,22 +166,12 @@ endfunction
 
 :nnoremap <enter> o<Esc>
 
-" coloca texto selecionado entre aspas
-:vnoremap <leader>" vi"
-
-" palavra atual entre aspas
-:nnoremap <leader>" vi"
-
-:inoremap <leader>j <Esc>:call Olamundo()<cr>
-
-"map para pegar trailingspace
-
 "troca o modo dos numeros
 map <leader>l :set relativenumber!<CR>
 
 
 "map para auto ident
-nnoremap <leader><TAB> mmgg=G'm
+nnoremap <leader><TAB> mmgg=G`m
 
 "map para colar e identar , teste.
 "nnoremap p mmp'[V']'m=
@@ -256,9 +267,13 @@ augroup END
 
 augroup grupoCPP
     autocmd!
+	" make the get and set prototype
     autocmd FileType cpp :nnoremap <buffer> <leader>p ma$"nyb$F "yy^/getters<CR>o<esc>xxa<c-r>y <c-r>n<esc>F l~F aget<esc>A() const;<esc>/setters<CR>o<esc>xxavoid <c-r>n<esc>F l~F aset<esc>A(<c-r>y <c-r>n);<esc>'aj:noh<CR>
+	" make the get and set function
     autocmd FileType cpp :nnoremap <buffer> <leader>P ma$"nyb$F "yy^?class <CR>w"cyeGo<c-r>y <c-r>n<esc>F l~F a<c-r>c::get<esc>A() const{<CR>return this-><c-r>n;<CR>}<CR><esc>3k"fd4d:let @G=@f<CR>ovoid <c-r>n<esc>F l~F a<c-r>c::set<esc>A(<c-r>y <c-r>n){<CR>this-><c-r>n = <c-r>n;<CR>}<CR><esc>3k"fd4d:let @S=@f<CR>'aj:noh<CR>:w<CR>
+	" write include with <>
     autocmd FileType cpp :inoremap <buffer> <leader>i <Esc>I#include <<Esc>A>
+	" write include with \"\"
     autocmd FileType cpp :inoremap <buffer> <leader>I <Esc>I#include "<Esc>A.hpp"
 augroup END
 
@@ -268,17 +283,10 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp,cuda :let @s=''
     autocmd FileType c,c.doxygen,cpp,cuda :let @g=''
     autocmd FileType c,c.doxygen,cpp,cuda :nnoremap <buffer> <leader>g I//<Esc>
-    autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> <leader>g <Esc>mnI//'ci
+    autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> <leader>g <Esc>mnI//<Esc>'n
     autocmd FileType c,c.doxygen,cpp,cuda :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
     autocmd FileType c,c.doxygen,cpp,cuda :let &path="lib,"
-    autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> çu <Esc>Iusing std::<Esc>A;
-    autocmd FileType c,c.doxygen,cpp,cuda :nnoremap <buffer> çf Va{zf
 "}
-	autocmd FileType c,c.oxygen,cpp,cuda :inoremap <silent><expr> <Tab>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<Tab>" :
-      \ coc#refresh()
-	autocmd FileType c,c.oxygen,cpp,cuda :inoremap <silent><expr> <c-space> coc#refresh()
 augroup END
 
 
