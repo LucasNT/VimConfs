@@ -1,0 +1,8 @@
+autoload
+cdir_plugins
+colors
+doc
+source_vimrc
+syntax
+undo-dir
+view
