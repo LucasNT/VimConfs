@@ -1,0 +1,37 @@
+snippet once "ifndef of .h files"
+#ifndef ${1:`!p
+if not snip.c:
+	import random, string
+	name = re.sub(r'[^A-Za-z0-9]+','_', snip.fn).upper()
+	rand = ''.join(random.sample(string.ascii_letters+string.digits, 8))
+	snip.rv = ('%s_%s' % (name,rand)).upper()
+else:
+	snip.rv = snip.c`}
+#define $1
+
+${VISUAL}$0
+
+#endif /* end of include guard: $1 */
+endsnippet
+
+snippet main "create main function"
+int main (${1:int argc , char *argv[]}) {
+	${VISUAL}$0
+	return 0;
+}
+endsnippet
+
+snippet for "for loop"
+for(${1:int} ${2:i} ${3: = 0 } ; $2 ${4: < $5} ; $2${6:++}){
+	$0
+}
+endsnippet
+
+snippet printf
+printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet printfn
+printf("$1\n"$2);
+$0
+endsnippet
