@@ -23,8 +23,9 @@ Plug 'JuliaEditorSupport/julia-vim' , { 'for' : [ 'julia' ] }
 
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
+
 
 Plug 'vim/killersheep'
 
@@ -34,14 +35,14 @@ Plug 'vim/killersheep'
 " LaTeX
 Plug 'vim-latex/vim-latex' , { 'for' : [ 'tex' , 'plaintex' ] }
 
+"snipts
+Plug 'SirVer/ultisnips'
+
 call plug#end()
 "}}}
 
 
 " if para mudar alguns comandos quando o teclado for dvorak
-if  substitute(system("setxkbmap -query | grep variant | sed  's/\\s\\+/ /' | cut -d ' ' -f 2"), '\n$', '', '') == "dvorak"
-    "set langmap='q,\\,w,.e,pr,yt,fy,gu,ci,ro,lp,/[,=],aa,os,ed,uf,ig,dh,hj,tk,nl,s\\;,-',\\;z,qx,jc,kv,xb,bn,mm,w\\,,v.,z/,[-,]=,\"Q,<W,>E,PR,YT,FY,GU,CI,RO,LP,?{,+},AA,OS,ED,UF,IG,DH,HJ,TK,NL,S:,_\",:Z,QX,JC,KV,XB,BN,MM,W<,V>,Z?
-endif
 
 let mapleader = "ç"
 let &path.="lib,"
@@ -66,6 +67,11 @@ set shiftwidth=4
 
 "}}}
 
+"fold config {{{
+	set foldcolumn=1
+	set nofoldenable
+"}}}
+
 set scrolloff=5  " a margem do fim da tela
 set mouse=""
 set lazyredraw "melhoria de desempenho
@@ -78,20 +84,25 @@ set breakindent
 let g:tex_flavor='latex'
 
 "folding
-set foldcolumn=1
-
-
 
 "vim-lsp -------------------- {{{
-
-	if(executable('ccls'))
+	if(executable('clangd'))
  		au User lsp_setup call lsp#register_server({
- 					\ 'name': 'ccls',
- 					\ 'cmd': {server_info->['ccls']},
+ 					\ 'name': 'clangd',
+ 					\ 'cmd': {server_info->['clangd', '-background-index']},
  					\ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
- 					\ 'initialization_options': {'clang':{ 'resourceDir': '/usr/lib/clang/9.0.1'} ,'cache': {'directory': '/tmp/ccls/cache' }},
+ 					\ 'initialization_options': {},
  					\ 'whitelist': ['c.doxygen', 'c', 'cpp', 'objc', 'objcpp', 'cc'],
  					\})
+	endif
+
+	if executable('typescript-language-server')
+		au User lsp_setup call lsp#register_server({
+		  \ 'name': 'javascript support using typescript-language-server',
+		  \ 'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+		  \ 'root_uri': { server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/..'))},
+		  \ 'whitelist': ['javascript', 'javascript.jsx', 'javascriptreact']
+		  \ })
 	endif
 
 	let g:lsp_diagnostics_enabled = 1
@@ -101,11 +112,11 @@ set foldcolumn=1
 	let g:lsp_hover_conceal = 0
 	set foldmethod=expr
 				\ foldexpr=lsp#ui#vim#folding#foldexpr()
+	set completeopt-=preview
 	function! s:on_lsp_buffer_enabled() abort
 		setlocal omnifunc=lsp#complete
 		setlocal signcolumn=yes
 		nmap <buffer> <leader>d <plug>(lsp-definition)
-		"nmap <buffer> <leader>  <plug>(function)
 		nmap <buffer> <leader>n <plug>(lsp-next-diagnostic)
 		nmap <buffer> <leader>N <plug>(lsp-previous-diagnostic)
 		nmap <buffer> <leader>r <plug>(lsp-rename)
@@ -121,10 +132,9 @@ set foldcolumn=1
 	inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 	inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 	inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
-	imap <c-space> <Plug>(asyncomplete_force_refresh)
+
 
 "}}}
-
 
 "lightline----------------{{{
 let g:lightline = {
@@ -154,6 +164,11 @@ endfunction
 
 "}}}
 
+"ultisnippets-------------{{{
+	let g:UltiSnipsExpandTrigger="<c-k>"
+	let g:UltiSnipsJumpForwardTrigger="<c-k>"
+	let g:UltiSnipsJumpBackwardTrigger="<c-b>"
+"}}}
 
 "alguns autocmd------------------{{{
     " retornar o cursor a posição em que estava quando fecho o arquivo
@@ -194,6 +209,8 @@ nnoremap <leader><TAB> mmgg=G`m
 :nmap <C-ScrollWheelRight> <nop>
 
 :noremap <silent> <F8> :TagbarToggle<CR>
+
+:noremap  <F9> <C-O>:call ChangeKeyboard()<CR>
 
 
 "tab
@@ -286,6 +303,7 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> <leader>g <Esc>mnI//<Esc>'n
     autocmd FileType c,c.doxygen,cpp,cuda :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
     autocmd FileType c,c.doxygen,cpp,cuda :let &path="lib,"
+	autocmd FileType c,c.doxygen,cpp,cuda :nnoremap <buffer> çf Va{zf
 "}
 augroup END
 
@@ -295,8 +313,11 @@ augroup END
 "}}}
 
 "autocmd xml e html ------------{{{
-    autocmd FileType html,xml :inoremap <buffer> </ </<C-X><C-O><Esc>mb==`ba
-    autocmd FileType html,xml :iabbrev <buffer> <html> <html><CR><head><CR><title></<CR></<CR><body><CR></<CR></
+	" these autocmd auto close tag in xml and html
+	"this commando don't work with asyncComplete
+    "autocmd FileType html,xml :inoremap <buffer> </ </<C-X><C-O><Esc>mb==`ba
+	"this work with asynComplete
+    autocmd FileType html,xml :inoremap <buffer> </ </<C-X><C-O><C-P><C-P><Esc>mb==`ba
 "}}}
 
 "txt --------------- {{{
@@ -320,5 +341,14 @@ source $HOME/.vim/source_vimrc
     let linha = call getLine(".")
     echom linha
     echom "mensagem minha" . carac
+:endfunction
+:function ChangeKeyboard()
+	echom "fui chamado"
+	if  substitute(system("setxkbmap -query | grep variant | sed  's/\\s\\+/ /' | cut -d ' ' -f 2"), '\n$', '', '') == "dvorak"
+		set langmap=xq,\\,w,.e,pr,yt,fy,gu,ci,ro,lp,=[,aa,os,ed,uf,ig,dh,hj,tk,nl,sç,-],\\;z,qx,jc,kv,xb,bn,mm,w\\,,v.,z\\;,\\\\\\,<W,?Q,>E,PR,YT,FY,GU,CI,RO,LP,+{,AA,OS,ED,UF,IG,DH,HJ,TK,NL,SÇ,_},:Z,QX,JC,KV,XB,BN,MM,W<,V.,Z:
+		set nolangremap
+	else
+		set langmap&
+	endif
 :endfunction
 
