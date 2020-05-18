@@ -26,6 +26,8 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/asyncomplete.vim'
 
+Plug 'NLKNguyen/papercolor-theme'
+
 
 Plug 'vim/killersheep'
 
@@ -105,13 +107,20 @@ let g:tex_flavor='latex'
 		  \ })
 	endif
 
+	if executable('pyls')
+		au User lsp_setup call lsp#register_server({
+					\ 'name': 'pyls',
+					\ 'cmd': {server_info->['pyls']},
+					\ 'whitelist': ['python'],
+					\})
+	endif
+
+
 	let g:lsp_diagnostics_enabled = 1
 	let g:lsp_signs_enabled = 1
 	let g:lsp_diagnostics_float_cursor = 1
 	let g:lsp_diagnostics_echo_delay = 1000
 	let g:lsp_hover_conceal = 0
-	set foldmethod=expr
-				\ foldexpr=lsp#ui#vim#folding#foldexpr()
 	set completeopt-=preview
 	function! s:on_lsp_buffer_enabled() abort
 		setlocal omnifunc=lsp#complete
@@ -226,6 +235,7 @@ nnoremap <leader><TAB> mmgg=G`m
     augroup vimLatex
         autocmd!
         autocmd FileType tex :set tw=120
+		autocmd FileType tex :setlocal spell spelllang=pt
     augroup END
 "}}}
 
@@ -302,6 +312,7 @@ augroup grupoCPPeC
     autocmd FileType c,c.doxygen,cpp,cuda :inoremap <buffer> <leader>g <Esc>mnI//<Esc>'n
     autocmd FileType c,c.doxygen,cpp,cuda :vnoremap <buffer> <leader>g <Esc>`<i/*<Esc>`>a*/<Esc>
     autocmd FileType c,c.doxygen,cpp,cuda :let &path="lib,"
+	autocmd FileType c,c.doxygen,cpp,cuda :set foldmethod=manual
 	autocmd FileType c,c.doxygen,cpp,cuda :nnoremap <buffer> çf Va{zf
 "}
 augroup END
@@ -321,6 +332,10 @@ augroup END
 
 "txt --------------- {{{
     autocmd FileType txt,text :set tw=100
+"}}}
+
+"javascript ----------{{{
+	autocmd FileType javascript :set foldmethod=expr foldexpr=lsp#ui#vim#folding#foldexpr()
 "}}}
 
 " autocmd - vimscript	----------------------{{{
