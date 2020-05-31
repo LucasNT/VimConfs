@@ -246,6 +246,14 @@ nnoremap <leader><TAB> mmgg=G`m
 "conf de temas ------------------ {{{
 "let g:gruvbox_italic=1
 set background=dark
+let g:PaperColor_Theme_Options = {
+  \   'theme': {
+  \     'default': {
+  \       'transparent_background': 1
+  \     }
+  \   }
+  \ }
+
 if &term =~ "linux"
     colorscheme crayon
     hi ExtraWhitespace ctermbg=blue
