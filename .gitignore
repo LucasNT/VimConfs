@@ -6,3 +6,4 @@ source_vimrc
 syntax
 undo-dir
 view
+.netrwhist
